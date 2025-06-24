@@ -74,7 +74,7 @@ def check_rate_limit(token: str, token_id: int, retries: int = 5, delay: int = 1
 
 if __name__ == "__main__":
     # List of GitHub API tokens
-    with open("GH_token_sub.txt", 'r') as f:
+    with open("tokens.txt", 'r') as f:
         tokens = f.read().splitlines()
     print(f"Found {len(tokens)} tokens")
 
