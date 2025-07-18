@@ -111,6 +111,8 @@ def collect_closed_issues(owner: str,
                           token: str,
                           path_issue: str,
                           cutoff_date: str):
+    # Define non-functional keywords
+    non_functional_keywords = ["performance", "optimiz", "optimis", "secur", "code smell", "documentation", "style", "design", "efficien"]
     # Parse cutoff date
     cutoff_date = datetime.strptime(cutoff_date, "%Y%m%d")
 
@@ -128,11 +130,17 @@ def collect_closed_issues(owner: str,
     for issue in closed_issues:
         issue_node = issue['node']
         issue_number = issue_node['number']
-        # issue_title = issue_node['title']
-        # issue_body = issue_node['body']
+        issue_title = issue_node['title']
+        issue_body = issue_node['body']
+        issue_labels = [label['name'] for label in issue_node.get('labels', {}).get('nodes', [])]
 
         if issue_number in existing_issues:
             continue
+        
+        # Classify the issue as functional or non-functional
+        issue_type = "non-functional" if any(
+            keyword in (issue_title + issue_body).lower() for keyword in non_functional_keywords
+        ) or any(label.lower() in non_functional_keywords for label in issue_labels) else "functional"
 
         for event in issue_node['timelineItems']['nodes']:
             if event['__typename'] == 'ClosedEvent' and event.get('closer') and event['closer']['__typename'] == 'PullRequest':
@@ -144,6 +152,7 @@ def collect_closed_issues(owner: str,
                         "repo": f"{owner}/{repo_name}",
                         "pull_number": pull_number,
                         "issue_number": issue_number,
+                        "type": issue_type,
                     }
 
                     with open(path_issue, "a") as f:
