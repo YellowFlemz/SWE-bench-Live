@@ -10,8 +10,8 @@ from typing import Optional
 from utils import (
     extract_patches,
     extract_problem_statement_and_hints,
-    Repo,
 )
+from repo_class import Repo
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"

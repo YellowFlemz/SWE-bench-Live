@@ -10,7 +10,7 @@ import logging
 import os
 from datetime import datetime
 from fastcore.xtras import obj2dict
-from utils import Repo
+from repo_class import Repo
 from typing import Optional
 
 logging.basicConfig(
