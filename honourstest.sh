@@ -19,8 +19,8 @@ mkdir -p output
 echo "[1/4] Crawling raw repositories..."
 python crawl_repo.py \
   --language Python \
-  --min_stars 65000 \
-  --max_stars 70000 \
+  --min_stars 16000 \
+  --max_stars 20000 \
   --tokens_file tokens.txt \
   --output_file output/raw_repos.jsonl
 

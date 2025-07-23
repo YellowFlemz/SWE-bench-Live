@@ -4,6 +4,7 @@ import argparse
 import json
 import logging
 import os
+from dotenv import load_dotenv
 from typing import Optional
 # import sys
 # sys.path.append("../")
@@ -12,12 +13,15 @@ from utils import (
     extract_problem_statement_and_hints,
 )
 from repo_class import Repo
+from classification import classify_with_qwen
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
+load_dotenv()
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 
 def create_instance(repo: Repo, pull: dict) -> dict:
     """
@@ -33,6 +37,7 @@ def create_instance(repo: Repo, pull: dict) -> dict:
     """
     patch, test_patch = extract_patches(pull, repo)
     problem_statement, hint_text, all_hint_text, commit_urls = extract_problem_statement_and_hints(pull, repo)
+    classification = classify_with_qwen(problem_statement, OPENROUTER_API_KEY)
     return {
         "repo": repo.full_name,
         "pull_number": pull["number"],
@@ -48,6 +53,7 @@ def create_instance(repo: Repo, pull: dict) -> dict:
         "all_hints_text": all_hint_text,
         "commit_urls": commit_urls,
         "created_at": pull["created_at"],
+        "classification": classification,
     }
 
 
