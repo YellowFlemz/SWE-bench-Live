@@ -45,6 +45,6 @@ mkdir -p job_status
 
 # Step 4: Merge split jobs
 echo "[4/4] Merging all split task files into raw_tasks.jsonl..."
-python swe_task_crawling/merge_tasks.py -o output/raw_tasks.jsonl
+python swe_task_crawling/merge_tasks.py output/tasks --security-output output/raw_security.jsonl --efficiency-output output/raw_efficiency.jsonl
 
 echo "✅ Done. Final tasks saved to: output/raw_tasks.jsonl"

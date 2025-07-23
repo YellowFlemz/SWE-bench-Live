@@ -7,13 +7,11 @@ def classify_with_qwen(problem_statement: str, api_key: str) -> str:
     Sends the problem statement to Qwen3-32B via OpenRouter and returns the classification.
     """
     prompt = f"""
-You are a software engineering assistant.
-Classify the following problem statement as one of the following categories:
-- Security
-- Efficiency
-- NA
+You are a software engineering assistant. Your job is to classify pull requests as solving security or efficiency issues. If they are not either of those,
+then classify them as NA. Do not simply look for keywords, make sure that from the context given, 
+it is clear that the pull request is solving a security or efficiency issue. If it is not clear, classify it as NA.
 
-Only respond with one of the following words: Security, Efficiency, NA.
+In your response, only respond with one of the following words in the exact format/case: Security, Efficiency, NA.
 
 Problem Statement:
 \"\"\"
