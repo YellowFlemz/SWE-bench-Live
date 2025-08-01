@@ -7,11 +7,35 @@ def classify_with_qwen(problem_statement: str, api_key: str) -> str:
     Sends the problem statement to Qwen3-32B via OpenRouter and returns the classification.
     """
     prompt = f"""
-You are a software engineering assistant. Your job is to classify pull requests as solving security or efficiency issues. If they are not either of those,
-then classify them as NA. Do not simply look for keywords, make sure that from the context given, 
-it is clear that the pull request is solving a security or efficiency issue. If it is not clear, classify it as NA.
+You are a software engineering assistant. Your task is to classify the intent of a GitHub pull request based on the problem statement below.
+The problem statement is taken from the issue description and describes the bug or requested feature.
+From this, you must determine whether the pull request addresses a Security issue, an Efficiency issue, or Neither.
+If the pull request does not clearly and explicitly address one of these types of issues, then classify it as NA (not applicable).
+Make sure to analyze the full context and reason about the underlying intent of the problem.
+If the issue mixes multiple concerns, label it Security or Efficiency only if that concern is clearly primary.
 
-In your response, only respond with one of the following words in the exact format/case: Security, Efficiency, NA.
+Classification Rules:
+Security: The issue describes a vulnerability, exposure, permission error, or unintended access that can be exploited. This includes but is not limited to:
+- Input validation flaws
+- Authentication or authorization bugs
+- Information leaks
+- Use of insecure algorithms or protocols
+- Unsafe use of third-party dependencies
+
+Efficiency: The issue concerns resource usage or performance. This includes:
+- Slow runtime
+- High memory or CPU consumption
+- Redundant computation
+- Inefficient algorithms or data structures
+- Excessive I/O or locking
+
+NA: Choose this label if:
+- The issue does not concern Security or Efficiency
+- The description is vague, missing, or ambiguous
+- The problem relates to functional correctness, features, design, style, documentation, or tests
+- You are unsure based on the information provided
+
+In your response, only respond with one of the following words in the exact format and case: Security, Efficiency, NA.
 
 Problem Statement:
 \"\"\"
@@ -27,7 +51,6 @@ Problem Statement:
     data = {
         "model": "qwen/qwen3-32b",
         "messages": [
-            {"role": "system", "content": "You are a helpful assistant that classifies pull request problems."},
             {"role": "user", "content": prompt},
         ],
         "temperature": 0,
