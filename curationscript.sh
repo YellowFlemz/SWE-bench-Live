@@ -19,8 +19,8 @@ mkdir -p output
 echo "[1/4] Crawling raw repositories..."
 python crawl_repo.py \
   --language Python \
-  --min_stars 16000 \
-  --max_stars 20000 \
+  --min_stars 35001 \
+  --max_stars 50000 \
   --tokens_file tokens.txt \
   --output_file output/raw_repos.jsonl
 
@@ -38,7 +38,7 @@ mkdir -p job_status
 ./swe_task_crawling/run_get_tasks_pipeline.sh \
   --repos-jsonl output/filtered_repos.jsonl \
   --token-file tokens.txt \
-  --cutoff-date 20250501 \
+  --cutoff-date 20250601 \
   --path-prs output/prs \
   --path-tasks output/tasks \
   --output-dir output/split_jobs
