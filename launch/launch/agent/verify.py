@@ -100,19 +100,22 @@ def observation_for_verify_action(
         VerifyObservation: Result of action execution
     """
     if not action:
-        content = f"""\
-Please using following format after `Action: ` to make a valid action choice:
+        content = f"""\ 
+Please use the following format after `Action: ` to make a valid action choice:
 {VerifyAction.__doc__}
 """
         return VerifyObservation(content=content, success=False)
-    if action.action == "command":
-        result = session.send_command(action.args)
-        return VerifyObservation(content=result.to_observation(), success=False)
-    if action.action == "issue":
-        if action.args == "none":
-            return VerifyObservation(content="", success=True)
-        else:
-            return VerifyObservation(content=action.args, success=False)
+    try:
+        if action.action == "command":
+            result = session.send_command(action.args)
+            return VerifyObservation(content=result.to_observation(), success=False)
+        if action.action == "issue":
+            if action.args == "none":
+                return VerifyObservation(content="", success=True)
+            else:
+                return VerifyObservation(content=action.args, success=False)
+    except Exception as e:
+        return VerifyObservation(content=f"Error executing action: {str(e)}", success=False)
 
 
 VERIFY_CONVERSATION_WINDOW = 10
@@ -159,7 +162,7 @@ def verify(max_steps: int, state: AgentState) -> dict:
     issue = None
     while step < max_steps:
         step += 1
-        # uses a window to avoid exceed context
+        # uses a window to avoid exceeding context
         if len(messages) < VERIFY_CONVERSATION_WINDOW + prefix_messages:
             input_messages = messages
         else:
@@ -167,15 +170,16 @@ def verify(max_steps: int, state: AgentState) -> dict:
                 messages[:prefix_messages] + messages[-VERIFY_CONVERSATION_WINDOW:]
             )
         response = llm.invoke(input_messages)
-        # print(response.pretty_repr())
         logger.info(response.pretty_repr())
         messages.append(response)
         action = parse_verify_action(response.content)
+        if action is None:
+            logger.warning("Invalid action received from LLM. Skipping this step.")
+            continue
         if action.action == "command":
             commands.append(action.args)
         observation = observation_for_verify_action(action, session)
         message = HumanMessage(f"Observation:\n{observation.content}")
-        # print(message.pretty_repr())
         logger.info(message.pretty_repr())
         messages.append(message)
         if action.action == "issue":

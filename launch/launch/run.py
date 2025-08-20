@@ -22,6 +22,9 @@ from launch.entry import launch
 from launch.utilities.config import load_config
 from launch.utilities.utils import check_workspace_exists, prepare_workspace
 
+from dotenv import load_dotenv
+load_dotenv()
+
 lock = threading.Lock()
 
 
